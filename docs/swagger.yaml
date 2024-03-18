@@ -1,0 +1,653 @@
+basePath: /api
+definitions:
+  models.Sex:
+    enum:
+    - male
+    - female
+    type: string
+    x-enum-varnames:
+    - Male
+    - Female
+  models.User:
+    properties:
+      id:
+        type: integer
+      isAdmin:
+        type: boolean
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  schemas.ActorInfo:
+    properties:
+      birthday:
+        example: 02-01-2006
+        type: string
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      middleName:
+        type: string
+      sex:
+        $ref: '#/definitions/models.Sex'
+    type: object
+  schemas.ActorWithFilmsResponse:
+    properties:
+      birthday:
+        example: 02-01-2006
+        type: string
+      films:
+        items:
+          $ref: '#/definitions/schemas.FilmInfo'
+        type: array
+      firstName:
+        type: string
+      id:
+        type: integer
+      lastName:
+        type: string
+      middleName:
+        type: string
+      sex:
+        $ref: '#/definitions/models.Sex'
+    type: object
+  schemas.AddActorRequest:
+    properties:
+      birthday:
+        example: 02-01-2006
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      middleName:
+        type: string
+      sex:
+        $ref: '#/definitions/models.Sex'
+    required:
+    - birthday
+    - firstName
+    - lastName
+    - sex
+    type: object
+  schemas.AddFilmRequest:
+    properties:
+      actorsIds:
+        items:
+          type: integer
+        type: array
+      description:
+        maxLength: 1000
+        type: string
+      rating:
+        maximum: 10
+        minimum: 0
+        type: integer
+      releaseDate:
+        example: 02-01-2006
+        type: string
+      title:
+        maxLength: 150
+        minLength: 1
+        type: string
+    required:
+    - actorsIds
+    - releaseDate
+    - title
+    type: object
+  schemas.CreateUserRequest:
+    properties:
+      isAdmin:
+        example: false
+        type: boolean
+      password:
+        example: <PASSWORD>
+        type: string
+      username:
+        example: user
+        type: string
+    required:
+    - isAdmin
+    - password
+    - username
+    type: object
+  schemas.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  schemas.FilmInfo:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      rating:
+        type: integer
+      releaseDate:
+        example: 02-01-2006
+        type: string
+      title:
+        type: string
+    type: object
+  schemas.FilmWithActorsResponse:
+    properties:
+      actors:
+        items:
+          $ref: '#/definitions/schemas.ActorInfo'
+        type: array
+      description:
+        type: string
+      id:
+        type: integer
+      rating:
+        type: integer
+      releaseDate:
+        example: 02-01-2006
+        type: string
+      title:
+        type: string
+    type: object
+  schemas.PartialUpdateActorRequest:
+    properties:
+      birthday:
+        example: 02-01-2006
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      middleName:
+        type: string
+      sex:
+        $ref: '#/definitions/models.Sex'
+    type: object
+  schemas.PartialUpdateFilmRequest:
+    properties:
+      actorsIds:
+        items:
+          type: integer
+        type: array
+      description:
+        maxLength: 1000
+        type: string
+      rating:
+        maximum: 10
+        minimum: 0
+        type: integer
+      releaseDate:
+        example: 02-01-2006
+        type: string
+      title:
+        maxLength: 150
+        minLength: 1
+        type: string
+    type: object
+  schemas.UpdateActorRequest:
+    properties:
+      birthday:
+        example: 02-01-2006
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      middleName:
+        type: string
+      sex:
+        $ref: '#/definitions/models.Sex'
+    required:
+    - birthday
+    - firstName
+    - lastName
+    - sex
+    type: object
+  schemas.UpdateFilmRequest:
+    properties:
+      actorsIds:
+        items:
+          type: integer
+        type: array
+      description:
+        maxLength: 1000
+        type: string
+      rating:
+        maximum: 10
+        minimum: 0
+        type: integer
+      releaseDate:
+        example: 02-01-2006
+        type: string
+      title:
+        maxLength: 150
+        minLength: 1
+        type: string
+    required:
+    - actorsIds
+    - description
+    - releaseDate
+    - title
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: sivistrukov@gmail.com
+    name: Vladislav Strukov
+  description: The backend of the Filmotek application, which provides a REST API
+    for managing the movie database.
+  title: VK assignment
+  version: "1.0"
+paths:
+  /v1/actors:
+    get:
+      consumes:
+      - application/json
+      description: Get list of actors
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.ActorWithFilmsResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: List actors
+      tags:
+      - actors
+    post:
+      consumes:
+      - application/json
+      description: Add actor to database
+      parameters:
+      - description: New actor
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.AddActorRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schemas.ActorInfo'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Add actor
+      tags:
+      - actors
+  /v1/actors/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove actor from database
+      parameters:
+      - description: Actor id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Remove actor
+      tags:
+      - actors
+    patch:
+      consumes:
+      - application/json
+      description: Partial update actor
+      parameters:
+      - description: Update actor
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.PartialUpdateActorRequest'
+      - description: Actor id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Partial update actor
+      tags:
+      - actors
+    put:
+      consumes:
+      - application/json
+      description: Update actor
+      parameters:
+      - description: Update actor
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.UpdateActorRequest'
+      - description: Actor id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Update actor
+      tags:
+      - actors
+  /v1/films:
+    get:
+      consumes:
+      - application/json
+      description: Get list of films
+      parameters:
+      - description: search by films title and actors names
+        in: query
+        name: search
+        type: string
+      - description: 'sorting by field. Format: orderBy=field1,-field2'
+        in: query
+        name: sortBy
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/schemas.FilmWithActorsResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: List films
+      tags:
+      - films
+    post:
+      consumes:
+      - application/json
+      description: Add film to database
+      parameters:
+      - description: New film
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.AddFilmRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/schemas.ActorInfo'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Add film
+      tags:
+      - films
+  /v1/films/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove film from database
+      parameters:
+      - description: Film id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Remove film
+      tags:
+      - films
+    patch:
+      consumes:
+      - application/json
+      description: Partial update film
+      parameters:
+      - description: Update film
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.PartialUpdateFilmRequest'
+      - description: Film id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Partial update film
+      tags:
+      - films
+    put:
+      consumes:
+      - application/json
+      description: Update film
+      parameters:
+      - description: Update film
+        in: body
+        name: actor
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.UpdateFilmRequest'
+      - description: Film id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      security:
+      - BasicAuth: []
+      summary: Update film
+      tags:
+      - films
+  /v1/users:
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: New user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/schemas.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/schemas.ErrorResponse'
+      summary: Create user
+      tags:
+      - users
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

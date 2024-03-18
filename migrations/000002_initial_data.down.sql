@@ -1,0 +1,1 @@
+TRUNCATE TABLE users, actors_and_films, actors, films;
