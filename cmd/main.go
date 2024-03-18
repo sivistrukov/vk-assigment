@@ -27,12 +27,6 @@ func main() {
 		log.Printf("cant load .env file: %s\n", err.Error())
 	}
 
-	// TODO: remove
-	err = godotenv.Load("../.env")
-	if err != nil {
-		log.Printf("cant load .env file: %s\n", err.Error())
-	}
-
 	ctx, stop := signal.NotifyContext(
 		context.Background(), syscall.SIGINT, syscall.SIGTERM,
 	)
