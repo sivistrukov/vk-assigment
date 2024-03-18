@@ -2,6 +2,7 @@ package postgresql
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -116,6 +117,23 @@ func TestUserRepo_Create(t *testing.T) {
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 			},
 			wantErr: false,
+		},
+		{
+			name: "invalid",
+			args: args{
+				context: context.Background(),
+				user: &models.User{
+					Username: "invalid",
+					Password: "invalid",
+					IsAdmin:  true,
+				},
+			},
+			mockBehavior: func(args args) {
+				mock.ExpectPrepare("INSERT").ExpectQuery().
+					WithArgs("invalid", "invalid", true).
+					WillReturnError(errors.New("some error"))
+			},
+			wantErr: true,
 		},
 	}
 
