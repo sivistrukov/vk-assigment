@@ -5,7 +5,6 @@ import (
 	"database/sql"
 
 	"github.com/sivistrukov/vk-assigment/internal/models"
-	"github.com/sivistrukov/vk-assigment/internal/services/auth"
 )
 
 type UserRepo struct {
@@ -29,14 +28,9 @@ func (r *UserRepo) Create(_ context.Context, user *models.User) error {
 	}
 	defer stmt.Close()
 
-	password, err := auth.HashPassword(user.Password)
-	if err != nil {
-		return err
-	}
-
 	err = stmt.QueryRow(
 		user.Username,
-		password,
+		user.Password,
 		user.IsAdmin,
 	).Scan(&user.ID)
 	if err != nil {

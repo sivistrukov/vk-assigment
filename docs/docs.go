@@ -672,9 +672,6 @@ const docTemplate = `{
                 "isAdmin": {
                     "type": "boolean"
                 },
-                "password": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string"
                 }
@@ -798,7 +795,6 @@ const docTemplate = `{
         "schemas.CreateUserRequest": {
             "type": "object",
             "required": [
-                "isAdmin",
                 "password",
                 "username"
             ],

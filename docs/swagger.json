@@ -666,9 +666,6 @@
                 "isAdmin": {
                     "type": "boolean"
                 },
-                "password": {
-                    "type": "string"
-                },
                 "username": {
                     "type": "string"
                 }
@@ -792,7 +789,6 @@
         "schemas.CreateUserRequest": {
             "type": "object",
             "required": [
-                "isAdmin",
                 "password",
                 "username"
             ],

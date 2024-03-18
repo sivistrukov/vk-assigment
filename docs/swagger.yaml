@@ -14,8 +14,6 @@ definitions:
         type: integer
       isAdmin:
         type: boolean
-      password:
-        type: string
       username:
         type: string
     type: object
@@ -111,7 +109,6 @@ definitions:
         example: user
         type: string
     required:
-    - isAdmin
     - password
     - username
     type: object

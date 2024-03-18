@@ -12,7 +12,7 @@ const (
 type User struct {
 	ID       uint   `json:"id"`
 	Username string `json:"username"`
-	Password string `json:"password"`
+	Password string `json:"-"`
 	IsAdmin  bool   `json:"isAdmin"`
 }
 
